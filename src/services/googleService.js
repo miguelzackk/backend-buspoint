@@ -33,7 +33,7 @@ async function calcularTempoComGoogle(
         origins: `${origemLat},${origemLng}`,
         destinations: `${destinoLat},${destinoLng}`,
         key: GOOGLE_API_KEY,
-        mode: "driving",
+        travelMode: "TRANSIT",
       },
     });
     return (
