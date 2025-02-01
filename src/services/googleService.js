@@ -3,6 +3,7 @@ const {
   GOOGLE_API_KEY,
   GOOGLE_GEOCODING_URL,
   GOOGLE_DISTANCE_MATRIX_URL,
+  GOOGLE_TRANSIT_URL,
 } = require("../config/apiConfig");
 
 async function buscarCoordenadasEndereco(endereco) {
@@ -33,7 +34,10 @@ async function calcularTempoComGoogle(
         origins: `${origemLat},${origemLng}`,
         destinations: `${destinoLat},${destinoLng}`,
         key: GOOGLE_API_KEY,
-        travelMode: "TRANSIT",
+        travelMode: "TRANSIT",  // Ensure travelMode is set to TRANSIT (for public transport)
+        transitPreferences: {
+          allowedTravelModes: ["BUS"]  // Ensuring only BUS is used
+        }
       },
     });
     return (
@@ -62,8 +66,33 @@ async function converterCoordenadasParaEndereco(latitude, longitude) {
   }
 }
 
+async function consultarRotaOnibus(origem, destino) {
+  try {
+    const response = await axios.post(GOOGLE_TRANSIT_URL, {
+      origin: {
+        address: origem
+      },
+      destination: {
+        address: destino
+      },
+      travelMode: "TRANSIT",
+      transitPreferences: {
+        allowedTravelModes: ["BUS"],  // Ensuring the route uses bus transportation only
+      },
+      computeAlternativeRoutes: true,
+      key: GOOGLE_API_KEY,
+    });
+    console.log("Rota encontrada: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao consultar a rota de transporte público:", error.message);
+    return null;
+  }
+}
+
 module.exports = {
   buscarCoordenadasEndereco,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
+  consultarRotaOnibus,
 };
