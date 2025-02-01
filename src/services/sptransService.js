@@ -71,4 +71,4 @@ module.exports = {
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
   buscarParadasPorLinha,
-};
+};  
