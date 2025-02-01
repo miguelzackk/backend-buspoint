@@ -10,6 +10,9 @@ const {
   converterCoordenadasParaEndereco,
 } = require("../services/googleService");
 
+const { buscarParadasPorLinha } = require("../services/sptransService");
+
+
 async function buscarInformacoes(req, res) {
   try {
     await autenticar();
@@ -84,5 +87,52 @@ async function buscarInformacoes(req, res) {
     res.status(500).json({ erro: error.message });
   }
 }
+
+async function buscarParadasDaLinha(codigoLinha) {
+  try {
+    const response = await buscarParadasPorLinha(codigoLinha);
+    if (response.length > 0) {
+      return response;
+    }
+    return [];
+  } catch (error) {
+    console.error("Erro ao buscar paradas da linha:", error.message);
+    return [];
+  }
+}
+
+async function criarRotaEntreParadas(paradas) {
+  // Aqui, você pode usar o código da API do Google Maps que você já tem
+  const waypoints = paradas.map(parada => ({
+    location: new google.maps.LatLng(parada.lat, parada.lng),
+    stopover: true,
+  }));
+
+  const request = {
+    origin: waypoints[0].location,  // Ponto de partida
+    destination: waypoints[waypoints.length - 1].location, // Ponto de chegada
+    waypoints: waypoints.slice(1, -1),  // Paradas intermediárias
+    travelMode: google.maps.TravelMode.DRIVING, // Modo de transporte
+  };
+
+  directionsService.route(request, (result, status) => {
+    if (status === google.maps.DirectionsStatus.OK) {
+      directionsRenderer.setDirections(result);
+    } else {
+      console.error("Erro ao calcular a rota:", status);
+    }
+  });
+}
+
+async function mostrarRotaDoOnibus(linha) {
+  const paradas = await buscarParadasDaLinha(linha);
+  if (paradas.length > 0) {
+    criarRotaEntreParadas(paradas);
+  } else {
+    console.error("Não foi possível encontrar as paradas dessa linha.");
+  }
+}
+
+module.exports = { mostrarRotaDoOnibus };
 
 module.exports = { buscarInformacoes };
