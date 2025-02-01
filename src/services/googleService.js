@@ -34,9 +34,9 @@ async function calcularTempoComGoogle(
         origins: `${origemLat},${origemLng}`,
         destinations: `${destinoLat},${destinoLng}`,
         key: GOOGLE_API_KEY,
-        travelMode: "TRANSIT",  // Ensure travelMode is set to TRANSIT (for public transport)
+        travelMode: "TRANSIT",
         transitPreferences: {
-          allowedTravelModes: ["BUS"]  // Ensuring only BUS is used
+          allowedTravelModes: ["BUS"]  
         }
       },
     });
@@ -77,7 +77,7 @@ async function consultarRotaOnibus(origem, destino) {
       },
       travelMode: "TRANSIT",
       transitPreferences: {
-        allowedTravelModes: ["BUS"],  // Ensuring the route uses bus transportation only
+        allowedTravelModes: ["BUS"], 
       },
       computeAlternativeRoutes: true,
       key: GOOGLE_API_KEY,
