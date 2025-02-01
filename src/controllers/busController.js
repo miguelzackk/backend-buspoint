@@ -1,4 +1,4 @@
-const { autenticar, buscarCodigoLinha, buscarParadaMaisProxima, buscarVeiculosPosicao, buscarParadasPorLinha } = require("../services/sptransService");
+const { autenticar, buscarCodigoLinha, buscarParadaMaisProxima, buscarVeiculosPosicao } = require("../services/sptransService");
 const { buscarCoordenadasEndereco, calcularTempoComGoogle, converterCoordenadasParaEndereco } = require("../services/googleService");
 
 async function buscarInformacoes(req, res) {
@@ -42,31 +42,6 @@ async function buscarInformacoes(req, res) {
             tempo_estimado_min: tempoChegada,
             localizacao_onibus: enderecoOnibus
         });
-    } catch (error) {
-        res.status(500).json({ erro: error.message });
-    }
-}
-
-async function buscarInformacoes(req, res) {
-    try {
-        await autenticar();
-        const { linha, endereco, sentido } = req.query;
-
-        if (!linha || !endereco || !sentido) {
-            return res.status(400).json({ erro: "Parâmetros inválidos." });
-        }
-
-        const codigoLinha = await buscarCodigoLinha(linha);
-        if (!codigoLinha) return res.status(404).json({ erro: "Linha não encontrada." });
-
-        const paradas = await buscarParadasPorLinha(codigoLinha);
-        if (paradas.length === 0) return res.status(404).json({ erro: "Nenhuma parada encontrada para essa linha." });
-
-        res.json({
-            linha: linha,
-            paradas: paradas
-        });
-
     } catch (error) {
         res.status(500).json({ erro: error.message });
     }

@@ -48,27 +48,9 @@ async function buscarVeiculosPosicao(codigoLinha) {
   }
 }
 
-async function buscarParadasPorLinha(codigoLinha) {
-  try {
-      const response = await api.get(`/Parada/BuscarParadasPorLinha?codigoLinha=${codigoLinha}`);
-      if (response.data && response.data.length > 0) {
-          return response.data.map(parada => ({
-              lat: parada.py,
-              lng: parada.px,
-              nome: parada.np
-          }));
-      }
-      return [];
-  } catch (error) {
-      console.error("Erro ao buscar paradas da linha:", error.message);
-      return [];
-  }
-}
-
 module.exports = {
   autenticar,
   buscarCodigoLinha,
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
-  buscarParadasPorLinha,
 };
