@@ -43,22 +43,38 @@ async function buscarVeiculosPosicao(codigoLinha, paradaLat, paradaLng, sentido)
     const response = await api.get(`/Posicao`);
     const linha = response.data.l.find((linha) => linha.cl === codigoLinha);
 
-    if (!linha) return null;
+    if (!linha) {
+      console.log("🚨 Nenhum ônibus encontrado para a linha:", codigoLinha);
+      return null;
+    }
 
-    // Filtrar apenas os ônibus que ainda NÃO passaram pelo ponto
+    console.log(`🔍 Ônibus encontrados para a linha ${codigoLinha}:`, linha.v);
+
+    // Filtrar apenas os ônibus que ainda NÃO passaram pela parada
     const onibusValidos = linha.v.filter((onibus) => {
+      // Verificar se o ônibus está no sentido correto
+      if (onibus.sl !== sentido) {
+        return false; // Ignorar ônibus no sentido oposto
+      }
+
+      // Calcular a distância entre o ônibus e a parada
       const distanciaOnibus = Math.hypot(onibus.py - paradaLat, onibus.px - paradaLng);
-      
-      // Verifica se o ônibus está no sentido correto e ainda não passou pelo ponto
-      return onibus.sl === sentido && distanciaOnibus > 0;
+
+      // Verificar se o ônibus ainda não passou da parada (considerando latitude e longitude)
+      const aindaNaoPassou = onibus.py < paradaLat || onibus.px < paradaLng; 
+
+      return aindaNaoPassou;
     });
+
+    console.log("🚌 Ônibus filtrados que ainda não passaram:", onibusValidos);
 
     return onibusValidos.length > 0 ? onibusValidos : null;
   } catch (error) {
-    console.error("Erro ao buscar posição dos veículos:", error.message);
+    console.error("❌ Erro ao buscar posição dos veículos:", error.message);
     return null;
   }
 }
+
 
 
 async function buscarParadasPorLinha(codigoLinha) {
