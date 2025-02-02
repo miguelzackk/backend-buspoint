@@ -38,15 +38,28 @@ async function buscarParadaMaisProxima(latitude, longitude) {
   }
 }
 
-async function buscarVeiculosPosicao(codigoLinha) {
+async function buscarVeiculosPosicao(codigoLinha, paradaLat, paradaLng, sentido) {
   try {
     const response = await api.get(`/Posicao`);
-    return response.data.l.find((linha) => linha.cl === codigoLinha) || null;
+    const linha = response.data.l.find((linha) => linha.cl === codigoLinha);
+
+    if (!linha) return null;
+
+    // Filtrar apenas os ônibus que ainda NÃO passaram pelo ponto
+    const onibusValidos = linha.v.filter((onibus) => {
+      const distanciaOnibus = Math.hypot(onibus.py - paradaLat, onibus.px - paradaLng);
+      
+      // Verifica se o ônibus está no sentido correto e ainda não passou pelo ponto
+      return onibus.sl === sentido && distanciaOnibus > 0;
+    });
+
+    return onibusValidos.length > 0 ? onibusValidos : null;
   } catch (error) {
     console.error("Erro ao buscar posição dos veículos:", error.message);
     return null;
   }
 }
+
 
 async function buscarParadasPorLinha(codigoLinha) {
   try {
