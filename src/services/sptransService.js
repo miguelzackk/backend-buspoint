@@ -38,53 +38,15 @@ async function buscarParadaMaisProxima(latitude, longitude) {
   }
 }
 
-async function buscarVeiculosPosicao(codigoLinha, paradaLat, paradaLng, sentido) {
+async function buscarVeiculosPosicao(codigoLinha) {
   try {
-    // 🛠️ Certifique-se de que estamos autenticados antes de fazer a requisição
-    await autenticar(); 
-
     const response = await api.get(`/Posicao`);
-    
-    // Verifica se a API retornou dados válidos
-    if (!response.data || !response.data.l) {
-      console.error("❌ Erro: Resposta da API não contém dados válidos.");
-      return null;
-    }
-
-    // Busca a linha correta na resposta da API
-    const linha = response.data.l.find((linha) => linha.cl === codigoLinha);
-
-    if (!linha) {
-      console.log(`🚨 Nenhum ônibus encontrado para a linha ${codigoLinha}`);
-      return null;
-    }
-
-    console.log(`🔍 Ônibus encontrados para a linha ${codigoLinha}:`, linha.v);
-
-    // Filtra apenas os ônibus que ainda NÃO passaram pela parada
-    const onibusValidos = linha.v.filter((onibus) => {
-      if (onibus.sl !== sentido) return false; // Filtra ônibus no sentido correto
-
-      // Distância entre o ônibus e a parada
-      const distanciaOnibus = Math.hypot(onibus.py - paradaLat, onibus.px - paradaLng);
-
-      // Verifica se o ônibus ainda não passou do ponto
-      const aindaNaoPassou = onibus.py < paradaLat || onibus.px < paradaLng; 
-
-      return aindaNaoPassou;
-    });
-
-    console.log("🚌 Ônibus filtrados que ainda não passaram:", onibusValidos);
-
-    return onibusValidos.length > 0 ? onibusValidos : null;
+    return response.data.l.find((linha) => linha.cl === codigoLinha) || null;
   } catch (error) {
-    console.error("❌ Erro ao buscar posição dos veículos:", error.message);
+    console.error("Erro ao buscar posição dos veículos:", error.message);
     return null;
   }
 }
-
-
-
 
 async function buscarParadasPorLinha(codigoLinha) {
   try {
