@@ -4,6 +4,7 @@ const {
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
 } = require("../services/sptransService");
+
 const {
   buscarCoordenadasEndereco,
   calcularTempoComGoogle,
@@ -12,44 +13,48 @@ const {
 
 async function buscarInformacoes(req, res) {
   try {
-    await autenticar();
-    const { linha, endereco, sentido } = req.query;
+    await autenticar(); // 🔒 Garante que a API está autenticada
 
+    const { linha, endereco, sentido } = req.query;
     if (!linha || !endereco || !sentido) {
       return res.status(400).json({ erro: "Parâmetros inválidos." });
     }
 
+    // 📍 Buscar coordenadas do endereço
     const coordenadas = await buscarCoordenadasEndereco(endereco);
     if (!coordenadas) {
       return res.status(404).json({ erro: "Endereço não encontrado." });
     }
 
+    // 🔍 Buscar código da linha
     const codigoLinha = await buscarCodigoLinha(linha);
-    if (!codigoLinha)
+    if (!codigoLinha) {
       return res.status(404).json({ erro: "Linha não encontrada." });
+    }
 
+    // 🚏 Buscar parada mais próxima do usuário
     const paradaMaisProxima = await buscarParadaMaisProxima(
       coordenadas.lat,
       coordenadas.lng
     );
-    if (!paradaMaisProxima)
-      return res
-        .status(404)
-        .json({ erro: "Nenhuma parada próxima encontrada." });
+    if (!paradaMaisProxima) {
+      return res.status(404).json({ erro: "Nenhuma parada próxima encontrada." });
+    }
 
-    const linhaInfo = await buscarVeiculosPosicao(codigoLinha);
-    if (!linhaInfo)
-      return res.status(404).json({ erro: "Nenhum veículo disponível." });
-
-    const veiculosNoSentido = linhaInfo.vs.filter(
-      (v) => linhaInfo.sl == sentido
+    // 🚌 Buscar ônibus apenas no sentido correto e que ainda não passou
+    const veiculosDisponiveis = await buscarVeiculosPosicao(
+      codigoLinha,
+      paradaMaisProxima.py,
+      paradaMaisProxima.px,
+      parseInt(sentido) // 🔄 Converte string para número
     );
-    if (veiculosNoSentido.length === 0)
-      return res
-        .status(404)
-        .json({ erro: "Nenhum veículo no sentido informado." });
 
-    const veiculoMaisProximo = veiculosNoSentido.reduce(
+    if (!veiculosDisponiveis || veiculosDisponiveis.length === 0) {
+      return res.status(404).json({ erro: "Nenhum veículo disponível no sentido informado." });
+    }
+
+    // 🏆 Encontrar o ônibus mais próximo da parada
+    const veiculoMaisProximo = veiculosDisponiveis.reduce(
       (maisProximo, veiculoAtual) => {
         const distMaisProx = Math.hypot(
           maisProximo.py - paradaMaisProxima.py,
@@ -63,10 +68,13 @@ async function buscarInformacoes(req, res) {
       }
     );
 
+    // 📍 Buscar endereço do ônibus
     const enderecoOnibus = await converterCoordenadasParaEndereco(
       veiculoMaisProximo.py,
       veiculoMaisProximo.px
     );
+
+    // ⏳ Calcular tempo de chegada
     const tempoChegada = await calcularTempoComGoogle(
       veiculoMaisProximo.py,
       veiculoMaisProximo.px,
@@ -74,12 +82,14 @@ async function buscarInformacoes(req, res) {
       paradaMaisProxima.px
     );
 
+    // 🔥 Retorna resposta JSON com os dados processados
     res.json({
-      linha: linhaInfo.lt,
+      linha: linha,
       parada: paradaMaisProxima.np,
       tempo_estimado_min: tempoChegada,
       localizacao_onibus: enderecoOnibus,
     });
+
   } catch (error) {
     res.status(500).json({ erro: error.message });
   }
