@@ -1,3 +1,4 @@
+//busRoutes.js
 const express = require("express");
 const { buscarInformacoes } = require("../controllers/busController");
 

@@ -1,3 +1,4 @@
+//apiConfig.js
 const axios = require("axios");
 const { wrapper } = require("axios-cookiejar-support");
 const tough = require("tough-cookie");

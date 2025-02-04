@@ -1,3 +1,4 @@
+//app.js
 const express = require("express");
 const dotenv = require("dotenv");
 const busRoutes = require("./routes/busRoutes");
