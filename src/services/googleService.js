@@ -53,4 +53,5 @@ module.exports = {
   buscarCoordenadasEndereco,
   calcularTempoComGoogle,
   consultarRotaOnibus,
+  converterCoordenadasParaEndereco,
 };
