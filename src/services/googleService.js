@@ -49,6 +49,23 @@ async function consultarRotaOnibus(origem, destino) {
   }
 }
 
+async function converterCoordenadasParaEndereco(latitude, longitude) {
+  try {
+    const response = await axios.get(GOOGLE_GEOCODING_URL, {
+      params: { latlng: `${latitude},${longitude}`, key: GOOGLE_API_KEY },
+    });
+    if (response.data.results.length > 0) {
+      return response.data.results[0].formatted_address;
+    } else {
+      return "Endereço não encontrado";
+    }
+  } catch (error) {
+    console.error("Erro ao converter coordenadas em endereço:", error.message);
+    return "Erro ao obter endereço";
+  }
+}
+
+
 module.exports = {
   buscarCoordenadasEndereco,
   calcularTempoComGoogle,
