@@ -23,6 +23,24 @@ async function buscarCoordenadasEndereco(endereco) {
   }
 }
 
+async function buscarCoordenadasParadaMaisProxima(paradaMaisProxima) {
+  try {
+    const response = await axios.get(GOOGLE_GEOCODING_URL, {
+      params: { address: paradaMaisProxima, key: GOOGLE_API_KEY },
+    });
+    if (response.data.results.length > 0) {
+      return response.data.results[0].geometry.location;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar coordenadas parada mais proxima:", error.message);
+    return null;
+  }
+}
+
+
+
 async function calcularTempoComGoogle(
   origemLat,
   origemLng,

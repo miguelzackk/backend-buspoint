@@ -75,10 +75,18 @@ async function buscarInformacoes(req, res) {
       paradaMaisProxima.px
     );
 
+    
+    const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima);
+    if (!coordenadasMP) {
+      return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
+    }
+
+
+
     res.json({
       linha: linhaInfo.lt,
       parada: paradaMaisProxima.np,
-      tempo_estimado_min: tempoChegada,
+      tempo_estimado_min: tempoChegada + " " + coordenadaMP,
       localizacao_onibus: enderecoOnibus,
     });
   } catch (error) {
