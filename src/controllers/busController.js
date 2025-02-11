@@ -77,7 +77,7 @@ async function buscarInformacoes(req, res) {
     );
 
     
-    const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima);
+    const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
     if (!coordenadasMP) {
       return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
     }
