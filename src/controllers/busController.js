@@ -7,6 +7,7 @@ const {
 } = require("../services/sptransService");
 const {
   buscarCoordenadasEndereco,
+  buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
 } = require("../services/googleService");
@@ -86,7 +87,7 @@ async function buscarInformacoes(req, res) {
     res.json({
       linha: linhaInfo.lt,
       parada: paradaMaisProxima.np,
-      tempo_estimado_min: tempoChegada + " " + coordenadaMP,
+      tempo_estimado_min: tempoChegada + " MP =  " + coordenadasMP + " , Endereco = " + coordenadas,
       localizacao_onibus: enderecoOnibus,
     });
   } catch (error) {
