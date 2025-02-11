@@ -23,11 +23,11 @@ async function buscarCoordenadasEndereco(endereco) {
   }
 }
 
-async function buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np) {
-  console.error("paramdamaisproxima:", paradaMaisProxima.np)
+async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
+  console.error("paramdamaisproxima:", paradaMaisProximanp)
   try {
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
-      params: { address: paradaMaisProxima.np, key: GOOGLE_API_KEY },
+      params: { address: paradaMaisProximanp, key: GOOGLE_API_KEY },
     });
     if (response.data.results.length > 0) {
       return response.data.results[0].geometry.location;
@@ -35,7 +35,7 @@ async function buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np) {
       return null;
     }
   } catch (error) {
-    console.error("Erro ao buscar coordenadas parada mais proxima:", error.message);
+    console.error("Erro ao buscar coordenadas parada mais proxima:", error.message + "  , " + paradaMaisProximanp );
     return null;
   }
 }
