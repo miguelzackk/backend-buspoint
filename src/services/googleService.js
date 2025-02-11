@@ -111,6 +111,7 @@ async function consultarRotaOnibus(origem, destino) {
 
 module.exports = {
   buscarCoordenadasEndereco,
+  buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
   consultarRotaOnibus,
