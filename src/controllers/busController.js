@@ -1,18 +1,18 @@
 //busController.js
-const {
+import {
   autenticar,
   buscarCodigoLinha,
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
-} = require("../services/sptransService");
-const {
+} from "../services/sptransService"
+import {
   buscarCoordenadasEndereco,
   buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
-} = require("../services/googleService");
+} from "../services/googleService"
 
-async function buscarInformacoes(req, res) {
+export async function buscarInformacoes(req, res) {
   try {
     await autenticar();
     const { linha, endereco, sentido } = req.query;
@@ -76,7 +76,7 @@ async function buscarInformacoes(req, res) {
       paradaMaisProxima.px
     );
 
-    
+
     const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
     if (!coordenadasMP) {
       return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
@@ -94,5 +94,3 @@ async function buscarInformacoes(req, res) {
     res.status(500).json({ erro: error.message });
   }
 }
-
-module.exports = { buscarInformacoes };
