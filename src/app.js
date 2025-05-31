@@ -1,9 +1,9 @@
 //app.js
-const express = require("express");
-const dotenv = require("dotenv");
-const busRoutes = require("./routes/busRoutes");
-
+import express from "express";
+import dotenv from "dotenv";
+import busRoutes from "./routes/busRoutes";
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
