@@ -1,8 +1,8 @@
 //busRoutes.js
-const express = require("express");
-const { buscarInformacoes } = require("../controllers/busController");
+import express from "express";
+import { buscarInformacoes } from "../controllers/busController";
 
 const router = express.Router();
 router.get("/busca", buscarInformacoes);
 
-module.exports = router;
+export default router;
