@@ -5,7 +5,7 @@ import {
   GOOGLE_GEOCODING_URL,
   GOOGLE_DISTANCE_MATRIX_URL,
   GOOGLE_TRANSIT_URL,
-} from "../config/apiConfig";
+} from "../config/apiConfig.js";
 
 export async function buscarCoordenadasEndereco(endereco) {
   try {

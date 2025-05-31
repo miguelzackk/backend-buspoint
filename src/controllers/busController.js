@@ -4,13 +4,13 @@ import {
   buscarCodigoLinha,
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
-} from "../services/sptransService"
+} from "../services/sptransService.js"
 import {
   buscarCoordenadasEndereco,
   buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
-} from "../services/googleService"
+} from "../services/googleService.js"
 
 export async function buscarInformacoes(req, res) {
   try {

@@ -1,7 +1,7 @@
 //app.js
 import express from "express";
 import dotenv from "dotenv";
-import busRoutes from "./routes/busRoutes";
+import busRoutes from "./routes/busRoutes.js";
 dotenv.config();
 
 const app = express();

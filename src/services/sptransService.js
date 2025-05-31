@@ -1,5 +1,5 @@
 //sptransService
-import { api, TOKEN } from "../config/apiConfig";
+import { api, TOKEN } from "../config/apiConfig.js";
 
 export async function autenticar() {
   try {

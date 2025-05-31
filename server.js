@@ -2,7 +2,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import busRoutes from "./src/routes/busRoutes";
+import busRoutes from "./src/routes/busRoutes.js";
 dotenv.config();
 
 const app = express();
