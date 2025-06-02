@@ -5,6 +5,7 @@ import {
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
 } from "../services/sptransService.js";
+
 import {
   buscarCoordenadasEndereco,
   buscarCoordenadasParadaMaisProxima,
@@ -15,6 +16,7 @@ import {
 export async function buscarInformacoes(req, res) {
   try {
     await autenticar();
+
     const { linha, endereco, sentido } = req.query;
     if (!linha || !endereco || !sentido) {
       return res.status(400).json({ erro: "Parâmetros inválidos." });
@@ -94,5 +96,3 @@ function encontrarVeiculoMaisProximo(veiculos, parada) {
 function calcularDistancia(ponto1, ponto2) {
   return Math.hypot(ponto1.py - ponto2.py, ponto1.px - ponto2.px);
 }
-
-export { buscarInformacoes };
