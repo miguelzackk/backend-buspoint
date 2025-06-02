@@ -16,7 +16,6 @@ import {
 export async function buscarInformacoes(req, res) {
   try {
     await autenticar();
-
     const { linha, endereco, sentido } = req.query;
     if (!linha || !endereco || !sentido) {
       return res.status(400).json({ erro: "Parâmetros inválidos." });
@@ -83,7 +82,7 @@ export async function buscarInformacoes(req, res) {
   }
 }
 
-// Função auxiliar para encontrar o veículo mais próximo
+// Função auxiliar
 function encontrarVeiculoMaisProximo(veiculos, parada) {
   return veiculos.reduce((maisProximo, atual) => {
     const distMaisProx = calcularDistancia(maisProximo, parada);
@@ -92,7 +91,6 @@ function encontrarVeiculoMaisProximo(veiculos, parada) {
   });
 }
 
-// Função auxiliar para cálculo de distância
 function calcularDistancia(ponto1, ponto2) {
   return Math.hypot(ponto1.py - ponto2.py, ponto1.px - ponto2.px);
 }
