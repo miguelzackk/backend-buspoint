@@ -1,23 +1,20 @@
-
 //busController.js
 import {
   autenticar,
   buscarCodigoLinha,
   buscarParadaMaisProxima,
   buscarVeiculosPosicao,
-} from "../services/sptransService.js"
+} from "../services/sptransService.js";
 import {
   buscarCoordenadasEndereco,
   buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
-} from "../services/googleService.js"
-
+} from "../services/googleService.js";
 
 export async function buscarInformacoes(req, res) {
   try {
     await autenticar();
-
     const { linha, endereco, sentido } = req.query;
     if (!linha || !endereco || !sentido) {
       return res.status(400).json({ erro: "Parâmetros inválidos." });
@@ -66,11 +63,9 @@ export async function buscarInformacoes(req, res) {
       paradaMaisProxima.px
     );
 
-
     const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
     if (!coordenadasMP) {
       return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
-
     }
 
     res.json({
@@ -100,5 +95,4 @@ function calcularDistancia(ponto1, ponto2) {
   return Math.hypot(ponto1.py - ponto2.py, ponto1.px - ponto2.px);
 }
 
-module.exports = { buscarInformacoes };
-
+export { buscarInformacoes };
