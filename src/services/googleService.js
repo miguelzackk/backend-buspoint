@@ -1,13 +1,12 @@
 //googleService.js
-const axios = require("axios");
-const {
+import axios from "axios";
+import {
   GOOGLE_API_KEY,
   GOOGLE_GEOCODING_URL,
-  GOOGLE_DISTANCE_MATRIX_URL,
-  GOOGLE_TRANSIT_URL,
-} = require("../config/apiConfig");
+  GOOGLE_DISTANCE_MATRIX_URL
+} from "../config/apiConfig.js";
 
-async function buscarCoordenadasEndereco(endereco) {
+export async function buscarCoordenadasEndereco(endereco) {
   try {
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
       params: { address: endereco, key: GOOGLE_API_KEY },
@@ -23,7 +22,7 @@ async function buscarCoordenadasEndereco(endereco) {
   }
 }
 
-async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
+export async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
   console.error("paramdamaisproxima:", paradaMaisProximanp)
   try {
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
@@ -35,14 +34,12 @@ async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
       return null;
     }
   } catch (error) {
-    console.error("Erro ao buscar coordenadas parada mais proxima:", error.message + "  , " + paradaMaisProximanp );
+    console.error("Erro ao buscar coordenadas parada mais proxima:", error.message + "  , " + paradaMaisProximanp);
     return null;
   }
 }
 
-
-
-async function calcularTempoComGoogle(
+export async function calcularTempoComGoogle(
   origemLat,
   origemLng,
   destinoLat,
@@ -56,7 +53,7 @@ async function calcularTempoComGoogle(
         key: GOOGLE_API_KEY,
         travelMode: "TRANSIT",
         transitPreferences: {
-          allowedTravelModes: ["BUS"] 
+          allowedTravelModes: ["BUS"]
         }
       },
     });
@@ -70,7 +67,7 @@ async function calcularTempoComGoogle(
   }
 }
 
-async function converterCoordenadasParaEndereco(latitude, longitude) {
+export async function converterCoordenadasParaEndereco(latitude, longitude) {
   try {
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
       params: { latlng: `${latitude},${longitude}`, key: GOOGLE_API_KEY },
@@ -86,7 +83,7 @@ async function converterCoordenadasParaEndereco(latitude, longitude) {
   }
 }
 
-async function consultarRotaOnibus(origem, destino) {
+export async function consultarRotaOnibus(origem, destino) {
   try {
     const response = await axios.post(GOOGLE_TRANSIT_URL, {
       origin: {
@@ -109,11 +106,3 @@ async function consultarRotaOnibus(origem, destino) {
     return null;
   }
 }
-
-module.exports = {
-  buscarCoordenadasEndereco,
-  buscarCoordenadasParadaMaisProxima,
-  calcularTempoComGoogle,
-  converterCoordenadasParaEndereco,
-  consultarRotaOnibus,
-};

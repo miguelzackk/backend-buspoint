@@ -1,7 +1,7 @@
 //sptransService
-const { api, TOKEN } = require("../config/apiConfig");
+import { api, TOKEN } from "../config/apiConfig.js";
 
-async function autenticar() {
+export async function autenticar() {
   try {
     await api.post(`/Login/Autenticar?token=${TOKEN}`);
   } catch (error) {
@@ -9,7 +9,7 @@ async function autenticar() {
   }
 }
 
-async function buscarCodigoLinha(letreiro) {
+export async function buscarCodigoLinha(letreiro) {
   try {
     const response = await api.get(`/Linha/Buscar?termosBusca=${letreiro}`);
     return response.data[0]?.cl || null;
@@ -19,7 +19,7 @@ async function buscarCodigoLinha(letreiro) {
   }
 }
 
-async function buscarParadaMaisProxima(latitude, longitude) {
+export async function buscarParadaMaisProxima(latitude, longitude) {
   try {
     const response = await api.get(`/Parada/Buscar?termosBusca=`);
     return response.data.reduce((maisProxima, paradaAtual) => {
@@ -39,7 +39,7 @@ async function buscarParadaMaisProxima(latitude, longitude) {
   }
 }
 
-async function buscarVeiculosPosicao(codigoLinha) {
+export async function buscarVeiculosPosicao(codigoLinha) {
   try {
     const response = await api.get(`/Posicao`);
     return response.data.l.find((linha) => linha.cl === codigoLinha) || null;
@@ -49,7 +49,7 @@ async function buscarVeiculosPosicao(codigoLinha) {
   }
 }
 
-async function buscarParadasPorLinha(codigoLinha) {
+export async function buscarParadasPorLinha(codigoLinha) {
   try {
       const response = await api.get(`/Parada/BuscarParadasPorLinha?codigoLinha=${codigoLinha}`);
       if (response.data && response.data.length > 0) {
@@ -65,11 +65,3 @@ async function buscarParadasPorLinha(codigoLinha) {
       return [];
   }
 }
-
-module.exports = {
-  autenticar,
-  buscarCodigoLinha,
-  buscarParadaMaisProxima,
-  buscarVeiculosPosicao,
-  buscarParadasPorLinha,
-};  

@@ -1,8 +1,9 @@
 //apiConfig.js
-const axios = require("axios");
-const { wrapper } = require("axios-cookiejar-support");
-const tough = require("tough-cookie");
-require("dotenv").config();
+import axios from "axios"
+import { wrapper } from "axios-cookiejar-support"
+import tough from "tough-cookie"
+import dotenv from "dotenv"
+dotenv.config()
 
 const TOKEN = process.env.SPTRANS_TOKEN;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
@@ -22,7 +23,7 @@ const api = wrapper(
   })
 );
 
-module.exports = {
+export {
   api,
   TOKEN,
   GOOGLE_API_KEY,

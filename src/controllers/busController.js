@@ -1,18 +1,20 @@
-const {
+
+//busController.js
+import {
   autenticar,
   buscarCodigoLinha,
   buscarParadaMaisProxima,
-  buscarVeiculosPosicao
-} = require("../services/sptransService");
-
-const {
+  buscarVeiculosPosicao,
+} from "../services/sptransService.js"
+import {
   buscarCoordenadasEndereco,
   buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
-  converterCoordenadasParaEndereco
-} = require("../services/googleService");
+  converterCoordenadasParaEndereco,
+} from "../services/googleService.js"
 
-async function buscarInformacoes(req, res) {
+
+export async function buscarInformacoes(req, res) {
   try {
     await autenticar();
 
@@ -64,9 +66,11 @@ async function buscarInformacoes(req, res) {
       paradaMaisProxima.px
     );
 
-    const coordenadasParada = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
-    if (!coordenadasParada) {
-      return res.status(404).json({ erro: "Coordenadas da parada mais próxima não encontradas." });
+
+    const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
+    if (!coordenadasMP) {
+      return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
+
     }
 
     res.json({
@@ -82,7 +86,7 @@ async function buscarInformacoes(req, res) {
   }
 }
 
-// ✅ Função auxiliar para encontrar o veículo mais próximo
+// Função auxiliar para encontrar o veículo mais próximo
 function encontrarVeiculoMaisProximo(veiculos, parada) {
   return veiculos.reduce((maisProximo, atual) => {
     const distMaisProx = calcularDistancia(maisProximo, parada);
@@ -91,9 +95,10 @@ function encontrarVeiculoMaisProximo(veiculos, parada) {
   });
 }
 
-// ✅ Função auxiliar para cálculo de distância
+// Função auxiliar para cálculo de distância
 function calcularDistancia(ponto1, ponto2) {
   return Math.hypot(ponto1.py - ponto2.py, ponto1.px - ponto2.px);
 }
 
 module.exports = { buscarInformacoes };
+
