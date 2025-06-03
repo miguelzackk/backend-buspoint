@@ -3,14 +3,14 @@ import {
   autenticar,
   buscarCodigoLinha,
   buscarParadaMaisProxima,
-  buscarVeiculosPosicao
+  buscarVeiculosPosicao,
+  buscarParadasPorLinha
 } from "../services/sptransService.js";
 
 import {
   buscarCoordenadasEndereco,
-  buscarCoordenadasParadaMaisProxima,
-  calcularTempoComGoogle,
-  converterCoordenadasParaEndereco
+  converterCoordenadasParaEndereco,
+  gerarRotaGoogle
 } from '../services/googleService.js';
 
 export async function buscarInformacoes(req, res) {
@@ -44,16 +44,26 @@ export async function buscarInformacoes(req, res) {
       return distAtual < distMaisProx ? atual : maisProximo;
     });
 
+    const itinerario = await buscarParadasPorLinha(codigoLinha);
+
+    const rota = await gerarRotaGoogle(
+      { lat: veiculoMaisProximo.py, lng: veiculoMaisProximo.px },
+      { lat: paradaMaisProxima.py, lng: paradaMaisProxima.px },
+      itinerario
+    );
+
+    if (!rota || !rota.routes || !rota.routes.length) {
+      return res.status(500).json({ erro: "Falha ao gerar rota no Google Directions." });
+    }
+
     const enderecoOnibus = await converterCoordenadasParaEndereco(veiculoMaisProximo.py, veiculoMaisProximo.px);
-    const tempoChegada = await calcularTempoComGoogle(veiculoMaisProximo.py, veiculoMaisProximo.px, paradaMaisProxima.py, paradaMaisProxima.px);
-    const coordenadasMP = await buscarCoordenadasParadaMaisProxima(paradaMaisProxima.np);
-    if (!coordenadasMP) return res.status(404).json({ erro: "CoordenadasMP não encontrado." });
 
     const resposta = {
       linha: linhaInfo.lt,
       parada: paradaMaisProxima.np,
-      tempo_estimado_min: tempoChegada,
-      localizacao_onibus: enderecoOnibus
+      tempo_estimado_min: Math.ceil(rota.routes[0].legs[0].duration.value / 60),
+      localizacao_onibus: enderecoOnibus,
+      polyline: rota.routes[0].overview_polyline.points
     };
 
     console.log("✅ Resposta enviada:", resposta);
