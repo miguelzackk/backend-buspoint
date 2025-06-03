@@ -10,6 +10,19 @@ dotenv.config();
 export const TOKEN = process.env.SPTRANS_TOKEN;
 export const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
+// ✅ Fail-fast se variáveis não configuradas
+if (!TOKEN) {
+  console.error("❌ SPTRANS_TOKEN não configurado. Configure no .env ou painel de env do Render.");
+  process.exit(1);
+}
+
+if (!GOOGLE_API_KEY) {
+  console.error("❌ GOOGLE_API_KEY não configurada. Configure no .env ou painel de env do Render.");
+  process.exit(1);
+}
+
+console.log("✅ SPTRANS_TOKEN e GOOGLE_API_KEY carregadas com sucesso.");
+
 // ✅ URLs base das APIs
 export const BASE_URL = "http://api.olhovivo.sptrans.com.br/v2.1";
 export const GOOGLE_GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json";
@@ -28,3 +41,4 @@ export const api = wrapper(
     headers: { "Content-Type": "application/json" }
   })
 );
+
