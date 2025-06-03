@@ -6,21 +6,41 @@ import {
   GOOGLE_DISTANCE_MATRIX_URL
 } from "../config/apiConfig.js";
 
-export async function buscarCoordenadasEndereco(endereco) {
+async function buscarCoordenadasEndereco(endereco) {
   try {
+    const enderecoFormatado = `${endereco}, São Paulo, SP`;
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
-      params: { address: endereco, key: GOOGLE_API_KEY },
+      params: {
+        address: enderecoFormatado,
+        key: GOOGLE_API_KEY,
+        region: "br"
+      }
     });
-    if (response.data.results.length > 0) {
-      return response.data.results[0].geometry.location;
+
+    console.log("🔎 Geocode raw response:", response.data);
+
+    const { status, results, error_message } = response.data;
+
+    if (status === "OK" && results.length > 0) {
+      console.log("✅ Endereço localizado:", results[0].formatted_address);
+      return results[0].geometry.location;
+    } else if (status === "ZERO_RESULTS") {
+      console.warn("⚠️ Nenhum resultado encontrado para:", enderecoFormatado);
+      return null;
     } else {
+      console.error(`❌ Erro na API Geocoding: Status ${status}, Mensagem: ${error_message}`);
       return null;
     }
   } catch (error) {
-    console.error("Erro ao buscar coordenadas:", error.message);
+    if (error.response) {
+      console.error("❌ Erro na resposta da API:", error.response.data);
+    } else {
+      console.error("❌ Erro ao buscar coordenadas:", error.message);
+    }
     return null;
   }
 }
+
 
 export async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
   console.error("paramdamaisproxima:", paradaMaisProximanp)
