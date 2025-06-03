@@ -11,7 +11,9 @@ import {
   buscarCoordenadasParadaMaisProxima,
   calcularTempoComGoogle,
   converterCoordenadasParaEndereco,
-} from "../services/googleService.js";
+  consultarRotaOnibus
+} from '../services/googleService.js';
+
 
 export async function buscarInformacoes(req, res) {
   try {
