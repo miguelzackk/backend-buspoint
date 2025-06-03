@@ -1,86 +1,69 @@
+//googleService.js
 import axios from "axios";
 import {
-  api,
-  TOKEN,
   GOOGLE_API_KEY,
   GOOGLE_GEOCODING_URL,
   GOOGLE_DISTANCE_MATRIX_URL,
   GOOGLE_TRANSIT_URL
 } from '../config/apiConfig.js';
 
+function checkApiKey() {
+  if (!GOOGLE_API_KEY) {
+    throw new Error("❌ GOOGLE_API_KEY está undefined no googleService.js");
+  }
+}
+
+// Reutilizado nas funções
+function logKey(funcName) {
+  console.log(`🔑 [${funcName}] Usando GOOGLE_API_KEY: ${GOOGLE_API_KEY.substring(0, 10)}...`);
+}
 
 export async function buscarCoordenadasEndereco(endereco) {
+  checkApiKey();
+  logKey('buscarCoordenadasEndereco');
+  const enderecoFormatado = `${endereco}, São Paulo, SP`;
+
   try {
-    const enderecoFormatado = `${endereco}, São Paulo, SP`;
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
-      params: {
-        address: enderecoFormatado,
-        key: GOOGLE_API_KEY,
-        region: "br"
-      }
+      params: { address: enderecoFormatado, key: GOOGLE_API_KEY, region: "br" }
     });
-
     console.log("🔎 Geocode raw response:", response.data);
-
     const { status, results, error_message } = response.data;
 
-    if (status === "OK" && results.length > 0) {
-      console.log("✅ Endereço localizado:", results[0].formatted_address);
-      return results[0].geometry.location;
-    } else if (status === "ZERO_RESULTS") {
-      console.warn("⚠️ Nenhum resultado encontrado para:", enderecoFormatado);
-      return null;
-    } else {
-      console.error(`❌ Erro na API Geocoding: Status ${status}, Mensagem: ${error_message}`);
-      return null;
-    }
+    if (status === "OK" && results.length > 0) return results[0].geometry.location;
+    console.error(`❌ Geocode erro: ${status}, ${error_message}`);
+    return null;
   } catch (error) {
-    if (error.response) {
-      console.error("❌ Erro na resposta da API:", error.response.data);
-    } else {
-      console.error("❌ Erro ao buscar coordenadas:", error.message);
-    }
+    console.error("❌ Erro buscarCoordenadasEndereco:", error.response?.data || error.message);
     return null;
   }
 }
 
-export async function buscarCoordenadasParadaMaisProxima(paradaMaisProximanp) {
-  console.error("paramdamaisproxima:", paradaMaisProximanp);
+export async function buscarCoordenadasParadaMaisProxima(parada) {
+  checkApiKey();
+  logKey('buscarCoordenadasParadaMaisProxima');
+  const enderecoFormatado = `${parada}, São Paulo, SP`;
+
   try {
-    const enderecoFormatado = `${paradaMaisProximanp}, São Paulo, SP`;
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
-      params: {
-        address: enderecoFormatado,
-        key: GOOGLE_API_KEY,
-        region: "br"
-      }
+      params: { address: enderecoFormatado, key: GOOGLE_API_KEY, region: "br" }
     });
-
-    console.log("🔎 Geocode raw response parada:", response.data);
-
+    console.log("🔎 Geocode parada response:", response.data);
     const { status, results, error_message } = response.data;
 
-    if (status === "OK" && results.length > 0) {
-      console.log("✅ Parada localizada:", results[0].formatted_address);
-      return results[0].geometry.location;
-    } else if (status === "ZERO_RESULTS") {
-      console.warn("⚠️ Nenhuma parada localizada para:", enderecoFormatado);
-      return null;
-    } else {
-      console.error(`❌ Erro na API Geocoding Parada: Status ${status}, Mensagem: ${error_message}`);
-      return null;
-    }
+    if (status === "OK" && results.length > 0) return results[0].geometry.location;
+    console.error(`❌ Geocode parada erro: ${status}, ${error_message}`);
+    return null;
   } catch (error) {
-    if (error.response) {
-      console.error("❌ Erro na resposta da API parada:", error.response.data);
-    } else {
-      console.error("❌ Erro ao buscar coordenadas parada:", error.message);
-    }
+    console.error("❌ Erro buscarCoordenadasParadaMaisProxima:", error.response?.data || error.message);
     return null;
   }
 }
 
 export async function calcularTempoComGoogle(origemLat, origemLng, destinoLat, destinoLng) {
+  checkApiKey();
+  logKey('calcularTempoComGoogle');
+
   try {
     const response = await axios.get(GOOGLE_DISTANCE_MATRIX_URL, {
       params: {
@@ -91,39 +74,35 @@ export async function calcularTempoComGoogle(origemLat, origemLng, destinoLat, d
         transit_mode: "bus"
       }
     });
-
-    console.log("🕒 Tempo estimado response:", response.data);
-
-    return (
-      Math.ceil(response.data.rows[0]?.elements[0]?.duration?.value / 60) ||
-      null
-    );
+    console.log("🕒 Distance Matrix response:", response.data);
+    return Math.ceil(response.data.rows[0]?.elements[0]?.duration?.value / 60) || null;
   } catch (error) {
-    console.error("Erro ao calcular tempo de chegada:", error.message);
+    console.error("❌ Erro calcularTempoComGoogle:", error.response?.data || error.message);
     return null;
   }
 }
 
-export async function converterCoordenadasParaEndereco(latitude, longitude) {
+export async function converterCoordenadasParaEndereco(lat, lng) {
+  checkApiKey();
+  logKey('converterCoordenadasParaEndereco');
+
   try {
     const response = await axios.get(GOOGLE_GEOCODING_URL, {
-      params: { latlng: `${latitude},${longitude}`, key: GOOGLE_API_KEY }
+      params: { latlng: `${lat},${lng}`, key: GOOGLE_API_KEY }
     });
-
-    if (response.data.results.length > 0) {
-      console.log("✅ Endereço convertido:", response.data.results[0].formatted_address);
-      return response.data.results[0].formatted_address;
-    } else {
-      console.warn("⚠️ Endereço não encontrado para coordenadas:", latitude, longitude);
-      return "Endereço não encontrado";
-    }
+    if (response.data.results.length > 0) return response.data.results[0].formatted_address;
+    console.warn("⚠️ Endereço não encontrado para:", lat, lng);
+    return "Endereço não encontrado";
   } catch (error) {
-    console.error("Erro ao converter coordenadas em endereço:", error.message);
+    console.error("❌ Erro converterCoordenadasParaEndereco:", error.response?.data || error.message);
     return "Erro ao obter endereço";
   }
 }
 
 export async function consultarRotaOnibus(origem, destino) {
+  checkApiKey();
+  logKey('consultarRotaOnibus');
+
   try {
     const response = await axios.post(GOOGLE_TRANSIT_URL, {
       origin: { address: origem },
@@ -133,11 +112,10 @@ export async function consultarRotaOnibus(origem, destino) {
       computeAlternativeRoutes: true,
       key: GOOGLE_API_KEY
     });
-
-    console.log("Rota encontrada: ", response.data);
+    console.log("🚌 Rota encontrada:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Erro ao consultar a rota de transporte público:", error.message);
+    console.error("❌ Erro consultarRotaOnibus:", error.response?.data || error.message);
     return null;
   }
 }

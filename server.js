@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import busRoutes from "./src/routes/busRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -12,4 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/", busRoutes);
 
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));   
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`✅ Ambiente: ${process.env.NODE_ENV || 'development'}`);
+});
